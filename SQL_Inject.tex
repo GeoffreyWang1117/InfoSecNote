@@ -1,0 +1,197 @@
+\documentclass{article}
+\usepackage{xeCJK} % 使用 xeCJK 宏包来支持中文
+\setCJKmainfont{PingFang SC} % 设置中文字体
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  sensitive=false,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  moredelim=[il][\textcolor{blue}]{\$},
+  moredelim=[is][\textcolor{blue}]{\%\%}{\%\%}
+}
+\lstset{
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{lightgray},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    tabsize=4,
+    captionpos=b,
+}
+
+\title{SQL与NoSQL数据库的区分及注入攻击防范}
+\author{Geoffrey Wang}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{区分SQL与NoSQL数据库}
+
+\subsection{SQL数据库}
+SQL数据库（关系型数据库）使用结构化查询语言（SQL）来管理和操作数据。常见的SQL数据库包括MySQL、PostgreSQL、SQL Server等。它们通常采用固定的表结构，通过联接（JOIN）等操作来实现复杂的查询。
+
+\subsection{NoSQL数据库}
+NoSQL数据库（非关系型数据库）不使用SQL作为查询语言，通常用于处理大规模的、非结构化的数据。NoSQL数据库包括MongoDB、CouchDB、Redis等，支持灵活的数据模型，如键-值存储、文档存储、列族存储等。
+
+\subsection{如何区分SQL和NoSQL数据库}
+攻击者可以通过以下几种方式确定目标系统使用的是关系型数据库还是非关系型数据库：
+\begin{itemize}
+    \item \textbf{错误消息}: 如果应用程序在处理查询时返回详细的错误信息，攻击者可以通过这些信息推断数据库类型。
+    \item \textbf{响应时间分析}: 通过分析复杂查询的响应时间，可以推测数据库的特性。
+    \item \textbf{URL模式和请求格式}: 分析应用程序的API或请求格式，推测其背后的数据库类型。
+    \item \textbf{数据库功能测试}: 通过发送特定的查询或操作，测试目标系统是否支持某种数据库特有的功能。
+    \item \textbf{端口扫描}: 使用工具扫描服务器的开放端口，识别常见的数据库服务。
+\end{itemize}
+
+\section{SQL注入 (SQL Injection)}
+
+\subsection{漏洞描述}
+SQL注入是一种通过将恶意SQL代码注入到查询语句中，来操控数据库的攻击方式。这种攻击通常利用了应用程序直接将用户输入嵌入到SQL查询中的漏洞。
+
+\subsection{典型不安全代码示例}
+
+\subsubsection{登录认证中的SQL注入}
+\begin{lstlisting}[language=Python, caption=存在SQL注入漏洞的登录代码]
+def login(username, password):
+    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    cursor.execute(query)
+    user = cursor.fetchone()
+    if user:
+        return "Login successful"
+    else:
+        return "Login failed"
+\end{lstlisting}
+
+\subsubsection{基于URL参数的SQL注入}
+\begin{lstlisting}[language=Python, caption=URL参数导致的SQL注入]
+def get_product_details(product_id):
+    query = f"SELECT * FROM products WHERE id = {product_id}"
+    cursor.execute(query)
+    return cursor.fetchone()
+\end{lstlisting}
+
+\subsubsection{搜索功能中的SQL注入}
+\begin{lstlisting}[language=Python, caption=搜索功能中的SQL注入]
+def search_products(keyword):
+    query = f"SELECT * FROM products WHERE name LIKE '%{keyword}%'"
+    cursor.execute(query)
+    return cursor.fetchall()
+\end{lstlisting}
+
+\subsubsection{删除记录中的SQL注入}
+\begin{lstlisting}[language=Python, caption=删除记录中的SQL注入]
+def delete_user(user_id):
+    query = f"DELETE FROM users WHERE id = {user_id}"
+    cursor.execute(query)
+\end{lstlisting}
+
+\subsubsection{报告生成中的SQL注入}
+\begin{lstlisting}[language=Python, caption=报告生成中的SQL注入]
+def generate_report(start_date, end_date):
+    query = f"SELECT * FROM sales WHERE date >= '{start_date}' AND date <= '{end_date}'"
+    cursor.execute(query)
+    return cursor.fetchall()
+\end{lstlisting}
+
+\subsubsection{批量更新中的SQL注入}
+\begin{lstlisting}[language=Python, caption=批量更新中的SQL注入]
+def update_user_roles(user_ids, new_role):
+    query = f"UPDATE users SET role = '{new_role}' WHERE id IN ({user_ids})"
+    cursor.execute(query)
+\end{lstlisting}
+
+\subsubsection{插入数据中的SQL注入}
+\begin{lstlisting}[language=Python, caption=插入数据中的SQL注入]
+def add_new_user(username, email, password):
+    query = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}')"
+    cursor.execute(query)
+\end{lstlisting}
+
+\subsection{如何防止SQL注入}
+为了防止SQL注入，推荐使用参数化查询、ORM框架，以及对用户输入进行严格的验证和过滤。
+
+\section{NoSQL注入 (NoSQL Injection)}
+
+\subsection{漏洞描述}
+NoSQL注入是一种通过操控NoSQL查询语句中的数据结构或逻辑，来攻击非关系型数据库的手段。这种攻击通常利用了应用程序在构建查询时对用户输入处理不当的漏洞。
+
+\subsection{典型不安全代码示例}
+
+\subsubsection{MongoDB中的NoSQL注入}
+\begin{lstlisting}[language=Python, caption=存在NoSQL注入漏洞的代码]
+def find_user(username, password):
+    query = {"username": username, "password": password}
+    user = db.users.find_one(query)
+    return user
+\end{lstlisting}
+
+\subsubsection{CouchDB中的NoSQL注入}
+\begin{lstlisting}[language=JavaScript, caption=存在NoSQL注入漏洞的CouchDB代码]
+function getDocumentById(id) {
+    return db.get(id);
+}
+\end{lstlisting}
+
+\subsubsection{Redis中的NoSQL注入}
+\begin{lstlisting}[language=Python, caption=Redis中的NoSQL注入]
+def get_cache_value(key):
+    value = redis_client.get(key)
+    return value
+\end{lstlisting}
+
+\subsubsection{Cassandra中的NoSQL注入}
+\begin{lstlisting}[language=Python, caption=Cassandra中的NoSQL注入]
+def get_user_activity(user_id):
+    query = f"SELECT * FROM user_activities WHERE user_id = {user_id}"
+    session.execute(query)
+    return session.fetchall()
+\end{lstlisting}
+
+\subsubsection{Firebase中的NoSQL注入}
+\begin{lstlisting}[language=JavaScript, caption=Firebase中的NoSQL注入]
+function getUserData(userId) {
+    return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
+        return snapshot.val();
+    });
+}
+\end{lstlisting}
+
+\subsubsection{Elasticsearch中的NoSQL注入}
+\begin{lstlisting}[language=Python, caption=Elasticsearch中的NoSQL注入]
+def search_documents(query):
+    body = {
+        "query": {
+            "match": {
+                "content": query
+            }
+        }
+    }
+    res = es.search(index="documents", body=body)
+    return res['hits']['hits']
+\end{lstlisting}
+
+\subsection{如何防止NoSQL注入}
+为了防止NoSQL注入，开发者应确保对所有用户输入进行严格的验证和过滤，使用安全的查询构建方法，并限制数据库的访问权限。
+
+\section{结论}
+SQL和NoSQL数据库在应用中都有其独特的优势，但它们各自的注入攻击方式也有所不同。了解和防范这些攻击，有助于提升应用程序的安全性，保护用户数据。
+
+\end{document}
