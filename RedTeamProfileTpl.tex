@@ -1,0 +1,103 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{xeCJK} % 支持中文
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+% 设置页面边距
+\geometry{top=1in, bottom=1in, left=1in, right=1in}
+
+% 调整段落间距
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0em}
+
+% 自定义简历的段落标题格式
+\titleformat{\section}{\bfseries\Large\raggedright}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\bfseries\large\raggedright}{}{0em}{}
+
+% 个人信息
+\newcommand{\name}{姓名}
+\newcommand{\phone}{电话}
+\newcommand{\email}{邮箱}
+\newcommand{\linkedin}{\href{https://www.linkedin.com/in/username}{LinkedIn}}
+\newcommand{\github}{\href{https://github.com/username}{GitHub}}
+
+\begin{document}
+
+% 标题部分
+\begin{center}
+    {\LARGE \name} \\
+    \phone \,|\, \email \,|\, \linkedin \,|\, \github \\
+\end{center}
+
+\vspace{0.5em}
+
+% 职业目标 (可选)
+\section*{职业目标}
+致力于在网络安全领域，发挥红队技能，通过模拟攻击提升组织的安全防御能力。
+
+% 专业技能
+\section*{专业技能}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{渗透测试}: 网络扫描、漏洞利用、后渗透操作
+    \item \textbf{社会工程学}: 钓鱼攻击、社交媒体工程
+    \item \textbf{工具}: Metasploit, Burp Suite, Nmap, Empire, Cobalt Strike
+    \item \textbf{开发技能}: Python, Bash, PowerShell
+\end{itemize}
+
+% 专业认证
+\section*{专业认证}
+\begin{itemize}[leftmargin=*]
+    \item OSCP（Offensive Security Certified Professional）
+    \item CEH（Certified Ethical Hacker）
+    \item CRTO（Certified Red Team Operator）
+\end{itemize}
+
+% 工作经验
+\section*{工作经验}
+
+\subsection*{红队工程师 | Acme Security Solutions | 2018年6月 - 2023年8月}
+\begin{itemize}[leftmargin=*]
+    \item 领导团队成功模拟针对金融行业的APT攻击，提高了客户的入侵检测率达30\%。
+    \item 设计并执行社交工程学攻击演练，成功获取目标组织80\%的员工凭证。
+\end{itemize}
+
+\subsection*{渗透测试工程师 | Global Cyber Security | 2016年7月 - 2018年5月}
+\begin{itemize}[leftmargin=*]
+    \item 通过渗透测试发现15个严重漏洞，帮助企业减少80\%的潜在风险。
+    \item 进行网络扫描和漏洞利用，使用Metasploit、Burp Suite等工具识别和利用多个零日漏洞。
+\end{itemize}
+
+% 项目经验
+\section*{项目经验}
+
+\subsection*{全球零售企业渗透测试项目 | 2022年3月 - 2022年5月}
+\begin{itemize}[leftmargin=*]
+    \item 使用Nmap和Nessus对企业网络进行全面扫描，识别开放端口和服务。
+    \item 成功执行横向移动，获取了目标企业70\%的关键服务器访问权限。
+\end{itemize}
+
+% 教育背景
+\section*{教育背景}
+
+\subsection*{某某大学 | 信息安全，理学学士 | 2016年6月毕业}
+\begin{itemize}[leftmargin=*]
+    \item 相关课程：网络安全概论、渗透测试与漏洞分析、加密技术
+\end{itemize}
+
+% 开源项目与社区参与 (可选)
+\section*{开源项目与社区参与 (可选)}
+
+\subsection*{开源贡献}
+\begin{itemize}[leftmargin=*]
+    \item 贡献代码至 Metasploit Framework，开发了多个漏洞利用模块。
+\end{itemize}
+
+\subsection*{社区参与}
+\begin{itemize}[leftmargin=*]
+    \item 参与CTF竞赛，获得全球排名前10\%。
+\end{itemize}
+
+\end{document}
